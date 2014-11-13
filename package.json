@@ -1,0 +1,19 @@
+{
+    "name": "update-docs",
+    "version": "0.0.1",
+    "author": "Marcel Gerber <mg.hain@gmx.de> (https://github.com/MarcelGerber)",
+    "description": "Creates a comprehensive JSON file of WebPlatform Docs' CSS Properties, mostly for offline use",
+    "main": "update-wpd-docs.js",
+    "license": "MIT",
+    "dependencies": {
+        "commander": "2.5.x",
+        "instaview": "0.6.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MarcelGerber/update-wpd-docs.git"
+    },
+    "bugs": {
+        "url": "https://github.com/MarcelGerber/update-wpd-docs/issues"
+    }
+}
