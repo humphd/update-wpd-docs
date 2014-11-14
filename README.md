@@ -10,5 +10,5 @@ Creates a comprehensive JSON file of WebPlatform Docs' CSS Properties, mostly fo
 
 # Usage
 ```
-[sudo] node update-wpd-docs --output <JSON file>
+[sudo] node update-wpd-docs --output <JSON file> [--exclude-vendor-prefixed]
 ```

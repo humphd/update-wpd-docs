@@ -41,6 +41,7 @@ var propertiesURL = "https://docs.webplatform.org/w/api.php?action=ask&format=js
 program
     .version("0.0.1")
     .option("-o, --output <s>", "The output css.json")
+    .option("--nv, --exclude-vendor-prefixed", "Exclude vendor prefixed properties")
     .parse(process.argv);
 
 var result = {},
@@ -77,6 +78,10 @@ https.get(propertiesURL, function (res) {
         console.log("Parsing properties");
         propertiesResponse = JSON.parse(propertiesResponse).query.results;
         Object.keys(propertiesResponse).forEach(function (propertyName) {
+            var propertyLastName = propertyName.substr(propertyName.lastIndexOf("/") + 1);
+            if (program.excludeVendorPrefixed && /^-\w+-.+/.test(propertyLastName)) { // Exclude vendor prefixed properties
+                return;
+            }
             var data = propertiesResponse[propertyName];
             var propertyData = {};
             if (data.printouts.Summary.length) {
