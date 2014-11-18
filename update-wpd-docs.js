@@ -30,7 +30,7 @@ var result = {},
 if (outputFile) {
     outputFile = path.normalize(path.resolve(__dirname, outputFile));
 } else {
-    console.error("Usage: update-docs --output outputJSON\nExample: update-docs --output ..\\brackets\\src\\extensions\\default\\WebPlatformDocs\\css.json");
+    console.error("Usage: update-docs --output outputJSON [--exclude-vendor-prefixed]\nExample: update-docs --output ..\\brackets\\src\\extensions\\default\\WebPlatformDocs\\css.json");
     process.exit();
 }
 
