@@ -12,3 +12,10 @@ Creates a comprehensive JSON file of selected [WebPlatform Docs](https://docs.we
 ```
 [sudo] node update-wpd-docs --output <path to output json> [--exclude-vendor-prefixed] [[--path <comma-separated list of paths>]]
 ```
+
+# Config
+You can create a `config.json` file with the keys `output`, `paths` and `vendor-prefixes`. You can also define aliases in there and use them like this:
+```
+[sudo] node update-wpd-docs <alias>
+```
+[Example `config.json`](https://github.com/MarcelGerber/update-wpd-docs/blob/brackets-config/config.json)

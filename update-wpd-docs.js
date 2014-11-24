@@ -9,6 +9,14 @@ var fs          = require("fs"),
     path        = require("path"),
     program     = require("commander");
 
+var defaults    = JSON.parse(fs.readFileSync("defaults.json")),
+    config;
+try {
+    config      = JSON.parse(fs.readFileSync("config.json"));
+} catch (e) {
+    config = {};
+}
+
 instaview.conf.paths.articles = "https://docs.webplatform.org/wiki/"; // base URL for every link
 instaview.conf.locale.image = "__Image__"; // disable <img> tags
 
@@ -16,12 +24,30 @@ var url, rawUrl = {};
 rawUrl.page = "https://docs.webplatform.org/w/api.php?action=ask&format=json&query=%20%5B%5BPath%3A%3A~{{1}}%2F*%5D%5D%7C%3FSummary%7Cprettyprint%3Dno%7Climit%3D1000000"; // #ask: [[Path::~{{1}}/*]]|?Summary|prettyprint=no|limit=1000000
 rawUrl.properties = "https://docs.webplatform.org/w/api.php?action=ask&format=json&query=%5B%5BValue%20for%20property%3A%3A~{{1}}%2F*%5D%5D%7C%3FProperty%20value%7C%3FProperty%20value%20description%7C%3FValue%20for%20property%7Cprettyprint%3Dno%7Climit%3D1000000"; // #ask: [[Value for property::~{{1}}/*]]|?Property value|?Property value description|?Value for property|prettyprint=no|limit=1000000
 
+function getConfig(alias) {
+    var conf = {};
+    conf = defaults;
+    Object.keys(config).forEach(function (key) {
+        conf[key] = config[key];
+    });
+    var aliasConfig = config.aliases && config.aliases[alias];
+    if (alias && aliasConfig) {
+        Object.keys(aliasConfig).forEach(function (key) {
+            conf[key] = aliasConfig[key];
+        });
+    }
+    return conf;
+}
+
 // Parse arguments
+program.parse(process.argv);
+config = getConfig(program.args[0]);
+
 program
     .version("0.0.1")
-    .option("-o, --output <s>", "The output css.json")
-    .option("--paths, --path <s>", "Comma-separated list of path(s) to include", "css/properties")
-    .option("--nv, --exclude-vendor-prefixed", "Exclude vendor prefixed properties")
+    .option("-o, --output <s>", "Path to output JSON", config.output)
+    .option("--nv, --exclude-vendor-prefixed", "Exclude vendor prefixed properties", !config["vendor-prefixes"])
+    .option("--path, --paths <s>", "Comma-separated list of path(s) to include", "css/properties", config.paths)
     .parse(process.argv);
 
 var result = {},
@@ -30,8 +56,7 @@ var result = {},
 if (outputFile) {
     outputFile = path.normalize(path.resolve(__dirname, outputFile));
 } else {
-    console.error("Usage: update-docs --output <path to output json> [--exclude-vendor-prefixed] [[--path <comma-separated list of paths>]]\nExample: update-docs --output ..\\brackets\\src\\extensions\\default\\WebPlatformDocs\\css.json");
-    process.exit();
+    program.help();
 }
 
 var message = "Updated data will be written to \"" + outputFile + "\"" + (path.extname(outputFile) === ".json" ? "" : ", which is not a .json file") + ".";
@@ -55,7 +80,7 @@ function createURLs(url, path) {
 }
 
 var response, currentPath, oldResultsLength,
-    paths = program.path.split(",");
+    paths = program.paths.split(",");
 
 function get(pathIndex) {
     currentPath = paths[pathIndex];
