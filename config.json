@@ -1,0 +1,13 @@
+{
+    "vendor-prefixes": false,
+    "aliases": {
+        "html": {
+            "paths": "html/elements,html/attributes",
+            "output": "../brackets/src/extensions/default/WebPlatformDocs/html.json"
+        },
+        "css": {
+            "paths": "css/properties",
+            "output": "../brackets/src/extensions/default/WebPlatformDocs/css.json"
+        }
+    }
+}
