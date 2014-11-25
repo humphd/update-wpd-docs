@@ -1,5 +1,6 @@
 {
     "vendor-prefixes": false,
+    "lowercase-keys": true,
     "aliases": {
         "html": {
             "paths": "html/elements,html/attributes",
