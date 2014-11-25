@@ -1,4 +1,5 @@
 {
     "vendor-prefixes": true,
-    "paths": "css/properties"
+    "paths": "css/properties",
+    "lowercase-keys": false
 }

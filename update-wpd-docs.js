@@ -46,9 +46,14 @@ config = getConfig(program.args[0]);
 program
     .version("0.0.1")
     .option("-o, --output <s>", "Path to output JSON", config.output)
-    .option("--nv, --exclude-vendor-prefixed", "Exclude vendor prefixed properties", !config["vendor-prefixes"])
-    .option("--path, --paths <s>", "Comma-separated list of path(s) to include", "css/properties", config.paths)
+    .option("-l, --lowercase-keys", "Make object keys all-lowercase")
+    .option("--nv, --exclude-vendor-prefixed", "Exclude vendor prefixed properties")
+    .option("--path, --paths <s>", "Comma-separated list of path(s) to include", config.paths)
     .parse(process.argv);
+
+// Apply defaults
+program.lowercaseKeys = program.lowercaseKeys || config["lowercase-keys"];
+program.excludeVendorPrefixed = program.excludeVendorPrefixed || !config["vendor-prefixes"];
 
 var result = {},
     outputFile = program.output;
@@ -113,6 +118,9 @@ function get(pathIndex) {
                     propertyData.SUMMARY = instaview.convert(htmlEscape(data.printouts.Summary[0]));
                     propertyData.URL = data.fullurl;
 
+                    if (program.lowercaseKeys) {
+                        propertyName = propertyName.toLowerCase();
+                    }
                     result[propertyName] = propertyData;
                 }
             });
@@ -130,6 +138,9 @@ function get(pathIndex) {
                     Object.keys(response).forEach(function (valueIdentifier) {
                         var data = response[valueIdentifier].printouts;
                         var forProperty = data["Value for property"].length && data["Value for property"][0].fulltext;
+                        if (forProperty && program.lowercaseKeys) {
+                            forProperty = forProperty.toLowerCase();
+                        }
                         var valueData = {};
                         var description;
                         if (data["Property value"].length && forProperty && result.hasOwnProperty(forProperty)) {
