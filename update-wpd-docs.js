@@ -46,12 +46,14 @@ config = getConfig(program.args[0]);
 program
     .version("0.0.1")
     .option("-o, --output <s>", "Path to output JSON", config.output)
+    .option("-s, --sort", "Sort the outputted array(s) alphabetically")
     .option("-l, --lowercase-keys", "Make object keys all-lowercase")
     .option("--nv, --exclude-vendor-prefixed", "Exclude vendor prefixed properties")
     .option("--path, --paths <s>", "Comma-separated list of path(s) to include", config.paths)
     .parse(process.argv);
 
 // Apply defaults
+program.sort = program.sort || config.sort;
 program.lowercaseKeys = program.lowercaseKeys || config["lowercase-keys"];
 program.excludeVendorPrefixed = program.excludeVendorPrefixed || !config["vendor-prefixes"];
 
@@ -82,6 +84,14 @@ function createURLs(url, path) {
         newUrl[key] = url[key].replace("{{1}}", encodeURIComponent(path));
     });
     return newUrl;
+}
+
+function sortFunction(a, b) { // function for sorting the values, specifically
+    function removeNonAlphanumeric(str) {
+        return str.replace(/&\w+;/g, "").replace(/[^\w\s]/g, ""); // remove escaped HTML tags and non-alphanumeric chars first
+    }
+    
+    return removeNonAlphanumeric(a.value).localeCompare(removeNonAlphanumeric(b.value));
 }
 
 var response, currentPath, oldResultsLength,
@@ -152,13 +162,22 @@ function get(pathIndex) {
                             }
                             valueData.value = instaview.convert(htmlEscape(data["Property value"][0])).substr(3); // trim <p> tag
 
-                            // FUTURE: Currently, there's no deterministic order for the value listing
                             if (!result[forProperty].VALUES) {
                                 result[forProperty].VALUES = [];
                             }
                             result[forProperty].VALUES.push(valueData);
                         }
                     });
+                    if (program.sort) {
+                        var currentObj;
+                        Object.keys(result).forEach(function (currentKey) {
+                            currentObj = result[currentKey];
+                            if (currentObj && currentObj.VALUES) {
+                                currentObj.VALUES.sort(sortFunction);
+                            }
+                        });
+                    }
+                    
                     console.log("Collected " + (Object.keys(result).length - oldResultsLength) + " pages in " + currentPath);
                     get(pathIndex + 1);
                 }).on("error", function (e) {
