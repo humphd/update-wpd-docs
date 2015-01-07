@@ -1,5 +1,6 @@
 {
     "vendor-prefixes": false,
+    "sort": true,
     "lowercase-keys": true,
     "aliases": {
         "html": {
