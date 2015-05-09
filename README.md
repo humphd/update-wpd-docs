@@ -1,4 +1,4 @@
-update-wpd-docs
+update-wpd-docs [![Dependency Status](https://david-dm.org/MarcelGerber/update-wpd-docs.svg)](https://david-dm.org/MarcelGerber/update-wpd-docs)
 ===============
 
 Creates a comprehensive JSON file of selected [WebPlatform Docs](https://docs.webplatform.org) data, mostly for offline use.
