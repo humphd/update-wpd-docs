@@ -49,6 +49,7 @@ program
     .option("-s, --sort", "Sort the outputted array(s) alphabetically")
     .option("-l, --lowercase-keys", "Make object keys all-lowercase")
     .option("--nv, --exclude-vendor-prefixed", "Exclude vendor prefixed properties")
+    .option("--add-protocol", "Use https:// protocol instead of protocol-relative URLs")
     .option("--path, --paths <s>", "Comma-separated list of path(s) to include", config.paths)
     .parse(process.argv);
 
@@ -56,6 +57,7 @@ program
 program.sort = program.sort || config.sort;
 program.lowercaseKeys = program.lowercaseKeys || config["lowercase-keys"];
 program.excludeVendorPrefixed = program.excludeVendorPrefixed || !config["vendor-prefixes"];
+program.addProtocol = program.addProtocol || config["add-protocol"];
 
 var result = {},
     outputFile = program.output;
@@ -125,8 +127,12 @@ function get(pathIndex) {
                 var data = response[propertyName];
                 var propertyData = {};
                 if (data.printouts.Summary.length) {
+                    var url = data.fullurl;
+                    if (program.addProtocol && url && url.substr(0, 2) === "//") {
+                        url = "https:" + url;
+                    }
                     propertyData.SUMMARY = instaview.convert(htmlEscape(data.printouts.Summary[0]));
-                    propertyData.URL = data.fullurl;
+                    propertyData.URL = url;
 
                     if (program.lowercaseKeys) {
                         propertyName = propertyName.toLowerCase();

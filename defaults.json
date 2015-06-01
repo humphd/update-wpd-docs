@@ -2,5 +2,6 @@
     "vendor-prefixes": true,
     "paths": "css/properties",
     "sort": false,
-    "lowercase-keys": false
+    "lowercase-keys": false,
+    "add-protocol": true
 }
