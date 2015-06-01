@@ -153,7 +153,7 @@ function get(pathIndex) {
 
                     Object.keys(response).forEach(function (valueIdentifier) {
                         var data = response[valueIdentifier].printouts;
-                        var forProperty = data["Value for property"].length && data["Value for property"][0].fulltext;
+                        var forProperty = valueIdentifier.split("#")[0]; // object key w/o hash
                         if (forProperty && program.lowercaseKeys) {
                             forProperty = forProperty.toLowerCase();
                         }
