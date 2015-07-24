@@ -80,6 +80,12 @@ function htmlEscape(str) {
     });
 }
 
+function fixUpLinks(str, url) {
+    return str.replace(/\[(https?|news|ftp|mailto|gopher|irc):(\/*)([^\]]*?) (.*?)\]/g, "<a href='$1:$2$3'>$4</a>")
+              .replace(/\[\[(#[^|]*?)\]\](\w*)/g, "<a href='" + url + "$1'>$1$2</a>")
+              .replace(/\[\[(#.*?)\|([^\]]+?)\]\](\w*)/g, "<a href='" + url + "$1'>$2$3</a>");
+}
+
 function createURLs(url, path) {
     var newUrl = {};
     Object.keys(url).forEach(function (key) {
@@ -131,7 +137,7 @@ function get(pathIndex) {
                     if (program.addProtocol && url && url.substr(0, 2) === "//") {
                         url = "https:" + url;
                     }
-                    propertyData.SUMMARY = instaview.convert(htmlEscape(data.printouts.Summary[0]));
+                    propertyData.SUMMARY = instaview.convert(fixUpLinks(htmlEscape(data.printouts.Summary[0]), url));
                     propertyData.URL = url;
 
                     if (program.lowercaseKeys) {
@@ -160,13 +166,14 @@ function get(pathIndex) {
                         var valueData = {};
                         var description;
                         if (data["Property value"].length && forProperty && result.hasOwnProperty(forProperty)) {
+                            var parentUrl = result[forProperty].URL;
                             valueData.description = "";
                             if (data["Property value description"].length) {
                                 // Remove possible "alt=...;" (image Wikitext), then fix a bug with parsing tables
                                 description = htmlEscape(data["Property value description"][0].replace(/\|alt=([^;]*);/, "|$1").replace(/\:\{\|/g, "{|"));
-                                valueData.description = instaview.convert(description);
+                                valueData.description = instaview.convert(fixUpLinks(description, parentUrl));
                             }
-                            valueData.value = instaview.convert(htmlEscape(data["Property value"][0])).substr(3); // trim <p> tag
+                            valueData.value = instaview.convert(fixUpLinks(htmlEscape(data["Property value"][0]), parentUrl)).substr(3); // trim <p> tag
 
                             if (!result[forProperty].VALUES) {
                                 result[forProperty].VALUES = [];
